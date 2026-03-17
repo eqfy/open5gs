@@ -42,6 +42,7 @@ example_conf = '''
     non3gpp.yaml
     transfer.yaml
     transfer-error-case.yaml
+    n2_handover.yaml
 '''.split()
 
 foreach file : example_conf

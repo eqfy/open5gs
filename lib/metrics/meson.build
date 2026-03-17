@@ -34,7 +34,8 @@ if meson.version().version_compare('>=0.51.0')
 
     libmicrohttpd_dep = dependency('libmicrohttpd', version: '>=0.9.40')
 
-    prometheus_client_c_proj = subproject('prometheus-client-c')
+    cmake = import('cmake')
+    prometheus_client_c_proj = cmake.subproject('prometheus-client-c')
 
 #
 # @acetcom
@@ -51,7 +52,7 @@ if meson.version().version_compare('>=0.51.0')
 #    else
 #        run_command('mkdir', '-p', missing_include_dir)
 #    endif
-    libprom_dep = prometheus_client_c_proj.get_variable('prom_dep')
+    libprom_dep = prometheus_client_c_proj.dependency('prom')
 
     libmetrics_dependencies = libmetrics_dependencies + [libprom_dep, libmicrohttpd_dep]
     libmetrics_file_list = libmetrics_file_list + ' prometheus/context.c'

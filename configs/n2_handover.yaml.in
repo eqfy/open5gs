@@ -1,0 +1,94 @@
+#
+# Container Test Configuration
+#
+# This config is used by the container variant of the inter-PLMN N2
+# handover test. It tells the test framework:
+#   1. Where to find MongoDB (Docker container)
+#   2. Which PLMNs are in play (Home + Visiting)
+#   3. Where the AMF NGAP listeners are (Docker container addresses)
+#   4. NOT to spawn any NFs (all no_* flags set)
+#
+# The AMF ngap.server addresses below are used by the test framework
+# to populate test_self()->ngap_addr (1st entry) and ngap2_addr (2nd).
+# These addresses must resolve to the Docker AMF containers.
+#
+# IMPORTANT: These addresses must be DNS-resolvable from wherever the
+# test binary runs (inside Docker network, or via /etc/hosts entries).
+#
+
+db_uri: mongodb://db.open5gs.org/open5gs
+
+logger:
+
+test:
+  serving:
+    - plmn_id:
+        mcc: 001
+        mnc: 01
+    - plmn_id:
+        mcc: 999
+        mnc: 70
+
+global:
+  parameter:
+    no_nrf: true
+    no_scp: true
+    no_sepp: true
+    no_amf: true
+    no_smf: true
+    no_upf: true
+    no_ausf: true
+    no_udm: true
+    no_pcf: true
+    no_nssf: true
+    no_bsf: true
+    no_udr: true
+    no_mme: true
+    no_sgwc: true
+    no_sgwu: true
+    no_pcrf: true
+    no_hss: true
+
+#
+# AMF section — only used for ngap.server addresses.
+# The test framework reads these to know where to SCTP-connect.
+#
+# Entry 1 → test_self()->ngap_addr  (Home AMF = h-amf)
+# Entry 2 → test_self()->ngap2_addr (Visiting AMF = v-amf)
+#
+amf:
+  ngap:
+    server:
+      - address: amf.5gc.mnc001.mcc001.3gppnetwork.org
+      - address: amf.5gc.mnc070.mcc999.3gppnetwork.org
+
+  tai:
+    - plmn_id:
+        mcc: 001
+        mnc: 01
+      tac: 1
+
+  plmn_support:
+    - plmn_id:
+        mcc: 001
+        mnc: 01
+      s_nssai:
+        - sst: 1
+          sd: "000001"
+
+  security:
+    integrity_order: [NIA2, NIA1, NIA0]
+    ciphering_order: [NEA0, NEA1, NEA2]
+
+  network_name:
+    full: Open5GS
+
+#
+# UDM section — only for home network key derivation (hnet).
+# May be needed if the test uses SUCI protection scheme.
+#
+udm:
+  hnet:
+    - id: 1
+      scheme: 1
+      key: 70d8e30e6e30e6e30e6e30e6e30e6e30e6e30e6e30e6e30e6e30e6e30e6e30e
